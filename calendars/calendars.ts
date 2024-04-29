@@ -28,10 +28,12 @@ function caculateRange(start: Date, end: Date) {
 
 function parseEvent(event: CalendarComponent) {
     if(event.type == 'VEVENT') {
+        // @ts-ignore
         if(event.summary.val.match('班')) {
             let range = caculateRange(event.start, event.end)
             cache.workingDays.push(...range)
         }
+        // @ts-ignore
         if(event.summary.val.match('休')) {
             let range = caculateRange(event.start, event.end)
             cache.holidays.push(...range)
