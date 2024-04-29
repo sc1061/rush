@@ -2,11 +2,25 @@ import ical, { CalendarComponent } from 'node-ical'
 
 const SOURCE = 'https://calendars.icloud.com/holiday/cn_zh.ics'
 
-const cache = {
-    cached: false,
-    workingDays: [] as string[],
-    holidays: [] as string[]
+type CalendarsCache = {
+    time: number;
+    cached: boolean;
+    workingDays: string[]
+    holidays: string[]
 }
+
+declare global {
+    var cache: CalendarsCache | undefined
+}
+
+let cache = globalThis.cache || {
+    time: Date.now(),
+    cached: false,
+    workingDays: [],
+    holidays: []
+}
+
+globalThis.cache = cache
 
 function format(date: Date) {
     return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
@@ -44,9 +58,7 @@ function parseEvent(event: CalendarComponent) {
 export function isWorkingDay(date: Date) {
     let formatDate = format(date)
     const {workingDays, holidays} = cache
-    console.log(cache.cached)
     if(workingDays.some(item => item == formatDate)) {
-        console.log('match')
         return true
     }
     if(holidays.some(item => item == formatDate)) {
@@ -60,6 +72,7 @@ export function isWorkingDay(date: Date) {
 
 export async function cacheCalendars() {
     const events = await ical.async.fromURL(SOURCE)
+    cache.time = Date.now()
     cache.cached = false
     cache.holidays = []
     cache.workingDays = []
@@ -71,4 +84,10 @@ export async function cacheCalendars() {
 
 export function isCalendarsCache() {
     return cache.cached
+}
+
+export function getCurrentCache() {
+    return {
+        time: cache.time
+    }
 }

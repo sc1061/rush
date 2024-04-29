@@ -1,4 +1,4 @@
-import { isWorkingDay } from "@/calendars/calendars";
+import { getCurrentCache, isWorkingDay } from "@/calendars/calendars";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -6,6 +6,5 @@ export async function GET(request: NextRequest) {
     let date = targetDate ? new Date(targetDate) : new Date()
     let is_working_day = isWorkingDay(date)
 
-
-    return NextResponse.json({is_working_day})
+    return NextResponse.json({is_working_day, ...getCurrentCache()})
 }
