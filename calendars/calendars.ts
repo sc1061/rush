@@ -68,3 +68,7 @@ export async function cacheCalendars() {
     }
     cache.cached = true
 }
+
+export function isCalendarsCache() {
+    return cache.cached
+}
